@@ -16,7 +16,8 @@
     "prettier": "npx prettier . --check",
     "prettier:fix": "npm run prettier -- --write",
     "format": "npm run prettier:fix && npm run lint:fix",
-    "types": "source .env && supabase gen types typescript --db-url $SECRET_SUPABASE_CONNECTION_STRING > ./lib/schema.ts && prettier lib/schema.ts --write"
+    "_types": "cross-env-shell \"supabase gen types typescript --db-url $SECRET_SUPABASE_CONNECTION_STRING > ./lib/schema.ts && prettier lib/schema.ts --write\"",
+    "types": "dotenv -- npm run _types"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.2.0",
@@ -58,6 +59,7 @@
     "@typescript-eslint/parser": "^6.4.0",
     "autoprefixer": "^10.4.15",
     "cross-env": "^7.0.3",
+    "dotenv-cli": "^7.3.0",
     "eslint": "^8.47.0",
     "eslint-config-next": "^13.4.17",
     "eslint-config-prettier": "^9.0.0",
