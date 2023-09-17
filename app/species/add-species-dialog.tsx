@@ -52,7 +52,6 @@ export const speciesSchema = z.object({
     .transform((val) => val?.trim()),
 });
 
-
 type FormData = z.infer<typeof speciesSchema>;
 
 const defaultValues: Partial<FormData> = {

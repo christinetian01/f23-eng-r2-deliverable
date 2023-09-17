@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Database } from "@/lib/schema";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { redirect, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, type BaseSyntheticEvent } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import type { speciesSchema } from "./add-species-dialog";
@@ -28,6 +28,7 @@ interface EditSpecies {
 export default function EditSpecies(thisSpecies: Species) {
   const [openEdit, setOpenEdit] = useState<boolean>(false);
   const [editError, setEditError] = useState("");
+  const [inputError, setInputError] = useState("");
   const supabase = createClientComponentClient<Database>();
   const router = useRouter();
 
@@ -52,19 +53,23 @@ export default function EditSpecies(thisSpecies: Species) {
     }
 
     if (thisSpecies.author == session.user.id) {
-      const { data, error } = await supabase
-        .from("species")
-        .update({
-          scientific_name: input.scientific_name,
-          common_name: input.common_name,
-          kingdom: input.kingdom,
-          total_population: input.total_population,
-          image: input.image,
-          description: input.description,
-        })
-        .eq("id", thisSpecies.id);
-      handleToCloseEdit();
-      router.refresh();
+      if (input.scientific_name != "" && input.common_name != "") {
+        const { data, error } = await supabase
+          .from("species")
+          .update({
+            scientific_name: input.scientific_name,
+            common_name: input.common_name,
+            kingdom: input.kingdom,
+            total_population: input.total_population,
+            image: input.image,
+            description: input.description,
+          })
+          .eq("id", thisSpecies.id);
+        handleToCloseEdit();
+        router.refresh();
+      } else {
+        setInputError("Please fill out the required fields");
+      }
     } else {
       setEditError("Login to the correct account to edit");
     }
@@ -83,13 +88,13 @@ export default function EditSpecies(thisSpecies: Species) {
         <DialogContent>
           <h3> Edit Species Information</h3>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(editInfo)}>
+            <form onSubmit={(e: BaseSyntheticEvent) => void form.handleSubmit(editInfo)(e)}>
               <FormField
                 control={form.control}
                 name="scientific_name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Scientific Name</FormLabel>
+                    <FormLabel>Scientific Name*</FormLabel>
                     <FormControl>
                       <Input defaultValue={thisSpecies.scientific_name} {...field} />
                     </FormControl>
@@ -104,7 +109,7 @@ export default function EditSpecies(thisSpecies: Species) {
                   const { value, ...rest } = field;
                   return (
                     <FormItem>
-                      <FormLabel>Common Name</FormLabel>
+                      <FormLabel>Common Name*</FormLabel>
                       <FormControl>
                         <Input defaultValue={thisSpecies.common_name} {...rest} />
                       </FormControl>
@@ -190,7 +195,8 @@ export default function EditSpecies(thisSpecies: Species) {
                   Cancel
                 </Button>
                 <br />
-                {editError && <p> Login to the correct account to edit</p>}
+                {editError && <p> {editError}</p>}
+                {inputError && <p> {inputError}</p>}
               </div>
             </form>
           </Form>

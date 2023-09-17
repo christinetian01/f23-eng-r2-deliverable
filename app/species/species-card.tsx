@@ -13,6 +13,7 @@ export default function SpeciesCard(species: Species) {
       {/*Overview of Species Information*/}
       <div className="min-w-72 m-4 w-72 flex-none rounded border-2 p-3 shadow">
         <EditSpecies key={species.id} {...species} />
+
         {species.image && (
           <div className="relative h-40 w-full">
             <Image src={species.image} alt={species.scientific_name} fill style={{ objectFit: "cover" }} />

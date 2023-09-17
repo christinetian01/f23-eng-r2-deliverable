@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import type { Database } from "@/lib/schema";
+import Image from "next/image";
 import { useState } from "react";
 
 type Species = Database["public"]["Tables"]["species"]["Row"];
@@ -18,6 +19,7 @@ interface SpeciesDialog {
 }
 
 export default function SpeciesDialog(thisSpecies: Species) {
+  // creates the dialog that pops up when users click "Learn More"
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
   const handleClickToOpenDialog = () => {
@@ -34,8 +36,13 @@ export default function SpeciesDialog(thisSpecies: Species) {
         Learn More
       </Button>
       <Dialog open={openDialog}>
-        <DialogContent>
+        <DialogContent className="max-h-screen overflow-y-auto sm:max-w-[600px]">
           <h3>Species Information</h3>
+          {thisSpecies.image && (
+            <div className="relative h-40 w-full">
+              <Image src={thisSpecies.image} alt={thisSpecies.scientific_name} fill style={{ objectFit: "cover" }} />
+            </div>
+          )}
           Species Name: {thisSpecies.common_name}
           <br></br>
           Scientific Name: {thisSpecies.scientific_name}
