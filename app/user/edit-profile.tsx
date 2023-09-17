@@ -115,22 +115,13 @@ export default function EditProfile(thisProfile: Profile) {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="biography"
-                render={({ field }) => {
-                  // We must extract value from field and convert a potential defaultValue of `null` to "" because inputs can't handle null values: https://github.com/orgs/react-hook-form/discussions/4091
-                  const { value, ...rest } = field;
-                  return (
-                    <FormItem>
-                      <FormLabel>Biography</FormLabel>
-                      <FormControl>
-                        <Input defaultValue={thisProfile.biography!} {...rest} />
-                      </FormControl>
-                    </FormItem>
-                  );
-                }}
-              />
+              <FormItem>
+                <FormLabel>Biography</FormLabel>
+                <FormControl>
+                  <Input defaultValue={thisProfile.biography!} />
+                </FormControl>
+              </FormItem>
+
               <div className="flex">
                 <Button type="submit">Save</Button>
                 <Button type="button" variant="secondary" onClick={handleToCloseEdit}>
