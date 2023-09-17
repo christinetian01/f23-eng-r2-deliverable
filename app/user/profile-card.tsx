@@ -2,6 +2,7 @@
 
 import type { Database } from "@/lib/schema";
 import EditProfile from "./edit-profile";
+import ProfileDialog from "./profile-dialog";
 
 interface ProfileCard {
   email: string;
@@ -20,6 +21,9 @@ export default function ProfileCard(profiles: Profile) {
         <h3 className="mt-3 text-2xl font-semibold">{profiles.display_name}</h3>
         <h4 className="text-lg font-light italic">{profiles.email}</h4>
         <p>{profiles.biography ? profiles.biography.slice(0, 150).trim() + "..." : ""}</p>
+
+        {/*Profile Dialog component that has a dialog pop up if 'View Information' is clicked*/}
+        <ProfileDialog key={profiles.id} {...profiles} />
       </div>
     </div>
   );
