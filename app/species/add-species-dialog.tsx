@@ -28,7 +28,7 @@ import { z } from "zod";
 
 const kingdoms = z.enum(["Animalia", "Plantae", "Fungi", "Protista", "Archaea", "Bacteria"]);
 
-const speciesSchema = z.object({
+export const speciesSchema = z.object({
   common_name: z
     .string()
     .nullable()
@@ -51,6 +51,7 @@ const speciesSchema = z.object({
     .nullable()
     .transform((val) => val?.trim()),
 });
+
 
 type FormData = z.infer<typeof speciesSchema>;
 
