@@ -85,7 +85,7 @@ export default function EditSpecies(thisSpecies: Species) {
       kingdom: "Animalia",
       common_name: thisSpecies.common_name,
       scientific_name: thisSpecies.scientific_name,
-      image: thisSpecies.image,
+      image: thisSpecies.image!,
       description: thisSpecies.description,
     },
     mode: "onChange",
@@ -132,7 +132,7 @@ export default function EditSpecies(thisSpecies: Species) {
                     <FormItem>
                       <FormLabel>Common Name</FormLabel>
                       <FormControl>
-                        <Input defaultValue={thisSpecies.common_name} />
+                        <Input defaultValue={thisSpecies.common_name!} />
                       </FormControl>
                     </FormItem>
                   );
@@ -192,7 +192,7 @@ export default function EditSpecies(thisSpecies: Species) {
                     <FormItem>
                       <FormLabel>Image URL</FormLabel>
                       <FormControl>
-                        <Input defaultValue={thisSpecies.image} {...field} />
+                        <Input defaultValue={thisSpecies.image!} {...field} />
                       </FormControl>
                     </FormItem>
                   );
@@ -208,7 +208,7 @@ export default function EditSpecies(thisSpecies: Species) {
                     <FormItem>
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <Textarea defaultValue={thisSpecies.description} {...rest} />
+                        <Textarea defaultValue={thisSpecies.description!} {...rest} />
                       </FormControl>
                     </FormItem>
                   );

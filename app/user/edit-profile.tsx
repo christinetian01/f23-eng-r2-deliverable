@@ -125,7 +125,7 @@ export default function EditProfile(thisProfile: Profile) {
                     <FormItem>
                       <FormLabel>Biography</FormLabel>
                       <FormControl>
-                        <Input defaultValue={thisProfile.biography} {...rest} />
+                        <Input defaultValue={thisProfile.biography!} {...rest} />
                       </FormControl>
                     </FormItem>
                   );
