@@ -6,12 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { Database } from "@/lib/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { redirect, useRouter } from "next/navigation";
 import { useState, type BaseSyntheticEvent } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import type { speciesSchema } from "./add-species-dialog";
+import { speciesSchema } from "./add-species-dialog";
 
 type Species = Database["public"]["Tables"]["species"]["Row"];
 
@@ -28,7 +29,6 @@ interface EditSpecies {
 export default function EditSpecies(thisSpecies: Species) {
   const [openEdit, setOpenEdit] = useState<boolean>(false);
   const [editError, setEditError] = useState("");
-  const [inputError, setInputError] = useState("");
   const supabase = createClientComponentClient<Database>();
   const router = useRouter();
 
@@ -54,7 +54,7 @@ export default function EditSpecies(thisSpecies: Species) {
 
     if (thisSpecies.author == session.user.id) {
       if (input.scientific_name != "" && input.common_name != "") {
-        const { data, error } = await supabase
+        await supabase
           .from("species")
           .update({
             scientific_name: input.scientific_name,
@@ -67,23 +67,34 @@ export default function EditSpecies(thisSpecies: Species) {
           .eq("id", thisSpecies.id);
         handleToCloseEdit();
         router.refresh();
-      } else {
-        setInputError("Please fill out the required fields");
       }
     } else {
       setEditError("Login to the correct account to edit");
     }
   };
 
-  const form = useForm();
+  const form = useForm<FormData>({
+    resolver: zodResolver(speciesSchema),
+    defaultValues: {
+      kingdom: "Animalia",
+      common_name: thisSpecies.common_name,
+      scientific_name: thisSpecies.scientific_name,
+      image: thisSpecies.image,
+      description: thisSpecies.description,
+    },
+    mode: "onChange",
+  });
+
   const kingdoms = z.enum(["Animalia", "Plantae", "Fungi", "Protista", "Archaea", "Bacteria"]);
 
   return (
     <div>
       {/*Implementing editing functionality*/}
+      {/*opens the edintg dialog when clicked*/}
       <Button variant="outline" onClick={handleClickToOpenEdit}>
         Edit
       </Button>
+
       <Dialog open={openEdit}>
         <DialogContent>
           <h3> Edit Species Information</h3>
@@ -92,14 +103,17 @@ export default function EditSpecies(thisSpecies: Species) {
               <FormField
                 control={form.control}
                 name="scientific_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Scientific Name*</FormLabel>
-                    <FormControl>
-                      <Input defaultValue={thisSpecies.scientific_name} {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
+                render={({ field }) => {
+                  const { value, ...rest } = field;
+                  return (
+                    <FormItem>
+                      <FormLabel>Scientific Name*</FormLabel>
+                      <FormControl>
+                        <Input defaultValue={thisSpecies.scientific_name} {...field} />
+                      </FormControl>
+                    </FormItem>
+                  );
+                }}
               />
               <FormField
                 control={form.control}
@@ -111,7 +125,7 @@ export default function EditSpecies(thisSpecies: Species) {
                     <FormItem>
                       <FormLabel>Common Name*</FormLabel>
                       <FormControl>
-                        <Input defaultValue={thisSpecies.common_name} {...rest} />
+                        <Input defaultValue={thisSpecies.common_name} />
                       </FormControl>
                     </FormItem>
                   );
@@ -124,7 +138,10 @@ export default function EditSpecies(thisSpecies: Species) {
                   <FormItem>
                     <FormLabel>Kingdom</FormLabel>
                     {/* Using shadcn/ui form with enum: https://github.com/shadcn-ui/ui/issues/772 */}
-                    <Select onValueChange={(value) => field.onChange(kingdoms.parse(value))} defaultValue={field.value}>
+                    <Select
+                      onValueChange={(value) => field.onChange(kingdoms.parse(value))}
+                      defaultValue={thisSpecies.kingdom}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder={thisSpecies.kingdom} />
@@ -164,14 +181,17 @@ export default function EditSpecies(thisSpecies: Species) {
               <FormField
                 control={form.control}
                 name="image"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Image URL</FormLabel>
-                    <FormControl>
-                      <Input defaultValue={thisSpecies.image} {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
+                render={({ field }) => {
+                  const { value, ...rest } = field;
+                  return (
+                    <FormItem>
+                      <FormLabel>Image URL</FormLabel>
+                      <FormControl>
+                        <Input defaultValue={thisSpecies.image} {...field} />
+                      </FormControl>
+                    </FormItem>
+                  );
+                }}
               />
               <FormField
                 control={form.control}
@@ -196,7 +216,6 @@ export default function EditSpecies(thisSpecies: Species) {
                 </Button>
                 <br />
                 {editError && <p> {editError}</p>}
-                {inputError && <p> {inputError}</p>}
               </div>
             </form>
           </Form>

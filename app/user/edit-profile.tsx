@@ -59,7 +59,7 @@ export default function EditProfile(thisProfile: Profile) {
 
     if (thisProfile.id == session.user.id) {
       if (input.display_name != "") {
-        const { data, error } = await supabase
+        await supabase
           .from("profiles")
           .update({
             display_name: input.display_name,

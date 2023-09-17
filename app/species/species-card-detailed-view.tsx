@@ -22,10 +22,12 @@ export default function SpeciesDialog(thisSpecies: Species) {
   // creates the dialog that pops up when users click "Learn More"
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
+  // control when the dialog opens
   const handleClickToOpenDialog = () => {
     setOpenDialog(true);
   };
 
+  // control when the dialog closes
   const handleToCloseDialog = () => {
     setOpenDialog(false);
   };
@@ -35,6 +37,8 @@ export default function SpeciesDialog(thisSpecies: Species) {
       <Button className="mt-3 w-full" onClick={handleClickToOpenDialog}>
         Learn More
       </Button>
+
+      {/* Dialog contains information on the species name, scientific name, population, kingdom, and description */}
       <Dialog open={openDialog}>
         <DialogContent className="max-h-screen overflow-y-auto sm:max-w-[600px]">
           <h3>Species Information</h3>
@@ -43,16 +47,16 @@ export default function SpeciesDialog(thisSpecies: Species) {
               <Image src={thisSpecies.image} alt={thisSpecies.scientific_name} fill style={{ objectFit: "cover" }} />
             </div>
           )}
-          Species Name: {thisSpecies.common_name}
-          <br></br>
-          Scientific Name: {thisSpecies.scientific_name}
-          <br></br>
-          Total Population: {thisSpecies.total_population}
-          <br></br>
-          Kingdom: {thisSpecies.kingdom}
-          <br></br>
-          Desription: {thisSpecies.description}
-          <br></br>
+          <b>Species Name:</b> {thisSpecies.common_name}
+          <br />
+          <b>Scientific Name:</b> {thisSpecies.scientific_name}
+          <br />
+          <b>Total Population:</b> {thisSpecies.total_population}
+          <br />
+          <b>Kingdom:</b> {thisSpecies.kingdom}
+          <br />
+          <b>Desription:</b> {thisSpecies.description}
+          <br />
           <Button onClick={handleToCloseDialog}>Close</Button>
         </DialogContent>
       </Dialog>

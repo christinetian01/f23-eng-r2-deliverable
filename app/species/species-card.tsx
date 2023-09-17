@@ -22,10 +22,9 @@ export default function SpeciesCard(species: Species) {
         <h3 className="mt-3 text-2xl font-semibold">{species.common_name}</h3>
         <h4 className="text-lg font-light italic">{species.scientific_name}</h4>
         <p>{species.description ? species.description.slice(0, 150).trim() + "..." : ""}</p>
-        {/*The following code pertains to implementing the pop-up dialog*/}
+        {/*SpeciesDialog component adds the pop-up that appears when 'Learn More' is clicked*/}
         <SpeciesDialog key={species.id} {...species} />
       </div>
-      {/* Replace with detailed view */}
     </div>
   );
 }
