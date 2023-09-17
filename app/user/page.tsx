@@ -1,10 +1,10 @@
+import { Separator } from "@/components/ui/separator";
 import { TypographyH2 } from "@/components/ui/typography";
 import { createServerSupabaseClient } from "@/lib/server-utils";
 import { redirect } from "next/navigation";
 import ProfileCard from "./profile-card";
 
-
-export default async function UserList() {
+export default async function SpeciesList() {
   // Create supabase server component client and obtain user session from stored cookie
   const supabase = createServerSupabaseClient();
   const {
@@ -16,15 +16,16 @@ export default async function UserList() {
     redirect("/");
   }
 
-  const { data: profile } = await supabase.from("profile").select("*");
+  const { data: profiles } = await supabase.from("profiles").select("*");
 
   return (
     <>
       <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
         <TypographyH2>Users</TypographyH2>
       </div>
+      <Separator className="my-4" />
       <div className="flex flex-wrap justify-center">
-        <ProfileCard key = {profile.id} {...profile}/>
+        {profiles?.map((profiles) => <ProfileCard key={profiles.id} {...profiles} />)}
       </div>
     </>
   );
