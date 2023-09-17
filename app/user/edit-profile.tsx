@@ -18,6 +18,7 @@ interface EditProfile {
   biography: string | null;
 }
 
+// profileSchema that will serve as the blueprint for the editing form, only can change display_name and biography
 export const profileSchema = z.object({
   display_name: z
     .string()
@@ -31,15 +32,23 @@ export const profileSchema = z.object({
 });
 
 export default function EditProfile(thisProfile: Profile) {
+  // opens the editing dialog for a profile
   const [openEdit, setOpenEdit] = useState<boolean>(false);
+
+  // error that appears if the user is editing a different profile card
   const [editError, setEditError] = useState("");
+
+  //error that appears if the required field (display_name) is empty
   const [inputError, setInputError] = useState("");
+
   const supabase = createClientComponentClient<Database>();
   const router = useRouter();
 
+  //opens the editing dialog
   const handleClickToOpenEdit = () => {
     setOpenEdit(true);
   };
+  //closes the editing dialog
   const handleToCloseEdit = () => {
     setOpenEdit(false);
     setEditError("");
@@ -48,6 +57,7 @@ export default function EditProfile(thisProfile: Profile) {
   type FormData = z.infer<typeof profileSchema>;
 
   const editInfo = async (input: FormData) => {
+    // get session info to access the user's id
     const {
       data: { session },
     } = await supabase.auth.getSession();
@@ -57,6 +67,7 @@ export default function EditProfile(thisProfile: Profile) {
       redirect("/");
     }
 
+    // update "profiles" only if the profile card's id matches the session user's id
     if (thisProfile.id == session.user.id) {
       if (input.display_name != "") {
         await supabase
@@ -70,9 +81,11 @@ export default function EditProfile(thisProfile: Profile) {
         setInputError("");
         router.refresh();
       } else {
+        // error if the required field (display_name) is left blank
         setInputError("Please fill out the required fields");
       }
     } else {
+      // error if the user is editing a different profile card
       setEditError("Login to the correct account to edit");
     }
   };
@@ -124,6 +137,7 @@ export default function EditProfile(thisProfile: Profile) {
                   Cancel
                 </Button>
                 <br />
+                {/* Errors that appears if the useState functions are triggered */}
                 {editError && <p> {editError}</p>}
                 {inputError && <p> {inputError}</p>}
               </div>

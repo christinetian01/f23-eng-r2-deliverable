@@ -32,9 +32,12 @@ export default function EditSpecies(thisSpecies: Species) {
   const supabase = createClientComponentClient<Database>();
   const router = useRouter();
 
+  // changes the openEdit variable and opens the editing dialog
   const handleClickToOpenEdit = () => {
     setOpenEdit(true);
   };
+
+  // closes the editing dialog and resets any previous edit errors
   const handleToCloseEdit = () => {
     setOpenEdit(false);
     setEditError("");
@@ -42,7 +45,9 @@ export default function EditSpecies(thisSpecies: Species) {
 
   type FormData = z.infer<typeof speciesSchema>;
 
+  // editInfo is triggered when the editing form is saved and it updates the corresponding Supabase entries
   const editInfo = async (input: FormData) => {
+    // get session in order to access the session user's id for later comparison
     const {
       data: { session },
     } = await supabase.auth.getSession();
@@ -52,27 +57,28 @@ export default function EditSpecies(thisSpecies: Species) {
       redirect("/");
     }
 
+    // if the session's user is the same as the species' author, then access to Supabase is granted
     if (thisSpecies.author == session.user.id) {
-      if (input.scientific_name != "" && input.common_name != "") {
-        await supabase
-          .from("species")
-          .update({
-            scientific_name: input.scientific_name,
-            common_name: input.common_name,
-            kingdom: input.kingdom,
-            total_population: input.total_population,
-            image: input.image,
-            description: input.description,
-          })
-          .eq("id", thisSpecies.id);
-        handleToCloseEdit();
-        router.refresh();
-      }
+      await supabase
+        .from("species")
+        .update({
+          scientific_name: input.scientific_name,
+          common_name: input.common_name,
+          kingdom: input.kingdom,
+          total_population: input.total_population,
+          image: input.image,
+          description: input.description,
+        })
+        .eq("id", thisSpecies.id);
+      handleToCloseEdit();
+      router.refresh();
     } else {
+      // an error message pops up that prompts users to use the correct account in order to edit info
       setEditError("Login to the correct account to edit");
     }
   };
 
+  // form is build on the speciesSchema and the default values are the values currently in Supabase
   const form = useForm<FormData>({
     resolver: zodResolver(speciesSchema),
     defaultValues: {
@@ -85,6 +91,7 @@ export default function EditSpecies(thisSpecies: Species) {
     mode: "onChange",
   });
 
+  // kingdom options
   const kingdoms = z.enum(["Animalia", "Plantae", "Fungi", "Protista", "Archaea", "Bacteria"]);
 
   return (
@@ -107,7 +114,7 @@ export default function EditSpecies(thisSpecies: Species) {
                   const { value, ...rest } = field;
                   return (
                     <FormItem>
-                      <FormLabel>Scientific Name*</FormLabel>
+                      <FormLabel>Scientific Name</FormLabel>
                       <FormControl>
                         <Input defaultValue={thisSpecies.scientific_name} {...field} />
                       </FormControl>
@@ -123,7 +130,7 @@ export default function EditSpecies(thisSpecies: Species) {
                   const { value, ...rest } = field;
                   return (
                     <FormItem>
-                      <FormLabel>Common Name*</FormLabel>
+                      <FormLabel>Common Name</FormLabel>
                       <FormControl>
                         <Input defaultValue={thisSpecies.common_name} />
                       </FormControl>
@@ -137,7 +144,6 @@ export default function EditSpecies(thisSpecies: Species) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Kingdom</FormLabel>
-                    {/* Using shadcn/ui form with enum: https://github.com/shadcn-ui/ui/issues/772 */}
                     <Select
                       onValueChange={(value) => field.onChange(kingdoms.parse(value))}
                       defaultValue={thisSpecies.kingdom}
@@ -167,7 +173,6 @@ export default function EditSpecies(thisSpecies: Species) {
                   <FormItem>
                     <FormLabel>Total population</FormLabel>
                     <FormControl>
-                      {/* Using shadcn/ui form with number: https://github.com/shadcn-ui/ui/issues/421 */}
                       <Input
                         type="number"
                         placeholder={thisSpecies.total_population}
@@ -210,11 +215,14 @@ export default function EditSpecies(thisSpecies: Species) {
                 }}
               />
               <div className="flex">
+                {/* Save button that submits the form if the speciesSchema conditions are met*/}
                 <Button type="submit">Save</Button>
+                {/* Button that closes the dialog when clicked*/}
                 <Button type="button" variant="secondary" onClick={handleToCloseEdit}>
                   Cancel
                 </Button>
                 <br />
+                {/* Error message that prompts user to use the correct account when editing species information if wrong account is being used */}
                 {editError && <p> {editError}</p>}
               </div>
             </form>
