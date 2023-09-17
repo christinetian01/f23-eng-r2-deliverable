@@ -175,7 +175,7 @@ export default function EditSpecies(thisSpecies: Species) {
                     <FormControl>
                       <Input
                         type="number"
-                        placeholder={thisSpecies.total_population}
+                        defaultValue={thisSpecies.total_population!}
                         {...field}
                         onChange={(event) => field.onChange(+event.target.value)}
                       />
