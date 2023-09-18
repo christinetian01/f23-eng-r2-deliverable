@@ -122,12 +122,21 @@ export default function EditSpecies(thisSpecies: Species) {
                 }}
               />
 
-              <FormItem>
-                <FormLabel>Common Name</FormLabel>
-                <FormControl>
-                  <Input defaultValue={thisSpecies.common_name!} />
-                </FormControl>
-              </FormItem>
+              <FormField
+                control={form.control}
+                name="common_name"
+                render={({ field }) => {
+                  const { value, ...rest } = field;
+                  return (
+                    <FormItem>
+                      <FormLabel>Common Name</FormLabel>
+                      <FormControl>
+                        <Input defaultValue={value ?? thisSpecies.common_name!} {...rest} />
+                      </FormControl>
+                    </FormItem>
+                  );
+                }}
+              />
 
               <FormField
                 control={form.control}
