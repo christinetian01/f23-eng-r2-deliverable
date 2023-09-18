@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import type { Database } from "@/lib/schema";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { redirect, useRouter } from "next/navigation";
@@ -118,7 +119,19 @@ export default function EditProfile(thisProfile: Profile) {
               <FormItem>
                 <FormLabel>Biography</FormLabel>
                 <FormControl>
-                  <Input defaultValue={thisProfile.biography!} />
+                  <FormField
+                    control={form.control}
+                    name="biography"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <Textarea defaultValue={thisProfile.biography!} {...field} />
+                          </FormControl>
+                        </FormItem>
+                      );
+                    }}
+                  />
                 </FormControl>
               </FormItem>
 

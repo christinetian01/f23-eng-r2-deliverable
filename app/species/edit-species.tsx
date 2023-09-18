@@ -191,7 +191,20 @@ export default function EditSpecies(thisSpecies: Species) {
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Textarea defaultValue={thisSpecies.description!} />
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => {
+                      const { value, ...rest } = field;
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <Textarea defaultValue={value ?? thisSpecies.description!} {...rest} />
+                          </FormControl>
+                        </FormItem>
+                      );
+                    }}
+                  />
                 </FormControl>
               </FormItem>
 
